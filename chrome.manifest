@@ -1,0 +1,13 @@
+#content  jsunit  content/
+
+# Components registration
+
+
+# Command line service
+component {66e6cef0-0a99-11e4-bddc-2f712bb03de5} components/jsunit-service.js
+contract @mozilla.org/jsunit/cline-handler;1 {66e6cef0-0a99-11e4-bddc-2f712bb03de5}
+category command-line-handler cline-jsunit @mozilla.org/jsunit/cline-handler;1
+
+# Resource module registration
+resource jsunit modules/
+
