@@ -42,6 +42,7 @@ var do_test_finished = JSUnit.testFinished;
 
 var do_print_msg = JSUnit.printMsg;
 
+var do_subtest = JSUnit.executeScript;
 
 function do_test_init(testName) {
   _gMyTestName = testName;
