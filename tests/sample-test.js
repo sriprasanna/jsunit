@@ -30,20 +30,24 @@ function asyncTests() {
   do_test_finished();
 }
 
+function syncTests() {
+  do_print_msg("Performing Synchronous tests")
+  do_check_true(1, true);
+  do_check_true(2, false);
+  do_check_false(3, false);
+  do_check_false(4, true);
+  do_check_eq(5, "x", "x");
+  do_check_eq(6, "x", "y");
+  do_check_neq(7, "x", "y");
+  do_check_neq(8, "x", "x");
+  do_get_file(9, "tests/sample-test.js");
+}
+
 do_test_init("SampleTest");
-do_print_msg("Performing Synchronous tests")
 
-do_check_true(1, true);
-do_check_true(2, false);
-do_check_false(3, false);
-do_check_false(4, true);
-do_check_eq(5, "x", "x");
-do_check_eq(6, "x", "y");
-do_check_neq(7, "x", "y");
-do_check_neq(8, "x", "x");
-do_get_file(9, "tests/sample-test.js");
+syncTests();
 
-do_test_pending();
+do_test_pending(); // must be set before the async call!
 setTimeout(asyncTests, 100);
 
 
