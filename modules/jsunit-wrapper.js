@@ -10,17 +10,12 @@
 
 Components.utils.import("resource://jsunit/jsunit-main.jsm");
 
-var assert = JSUnit.assert;
+var Assert = JSUnit.assert;
 
 
 function do_get_file (filename, allowNonexistent) {
   var c = Components.stack.caller;
   return JSUnit.getFile(c, filename, allowNonexistent);
-}
-
-function do_throw(exception) {
-  var c = Components.stack.caller;
-  return JSUnit.throwException(c.filename, c.lineNumber, exception);
 }
 
 var do_get_cwd = JSUnit.getCwd;
@@ -34,7 +29,7 @@ var do_print = JSUnit.printMsg;
 var do_subtest = JSUnit.executeScript;
 
 
-function do_load_script(urlString) {
+function do_load_module(urlString) {
   JSUnit.loadScript(urlString, this);
 }
 

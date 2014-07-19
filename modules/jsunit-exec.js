@@ -12,6 +12,7 @@ try {
   run_test();
 }
 catch (ex) {
+
   JSUnit.abortPendingTests();
   JSUnit.logTestResult("RuntimeError: Caught unhandled exception: "+ ex.toString(),
     null,

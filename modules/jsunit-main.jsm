@@ -92,13 +92,22 @@ var JSUnit = {
   },
 
   executeScript: function(scriptFile, isAbsolutePath, dontRun) {
+    var isUrl = false;
+    if (scriptFile.search(/^(chrome|file|resource):\/\//) == 0) {
+      isAbsolutePath = true;
+      isUrl = true;
+    }
+
     if (! isAbsolutePath) {
-      scriptFile = gCurrDir + "/" + scriptFile
+      scriptFile = "file://" + gCurrDir + "/" + scriptFile
+    }
+    if (! isUrl) {
+      scriptFile = "file://" + scriptFile;
     }
 
     let context = {};
     Services.scriptloader.loadSubScript("resource://jsunit/jsunit-wrapper.js", context, "UTF-8");
-    Services.scriptloader.loadSubScript("file://"+scriptFile, context, "UTF-8");
+    Services.scriptloader.loadSubScript(scriptFile, context, "UTF-8");
     if (! dontRun) {
       Services.scriptloader.loadSubScript("resource://jsunit/jsunit-exec.js", context, "UTF-8");
     }

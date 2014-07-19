@@ -13,11 +13,11 @@ function runDelayed( callbackFunction, sleepTimeMs ) {
 function asyncTests() {
 
   do_print("** Performing async tests **");
-  assert.ok(true, "true");
-  assert.ok(false, "false");
-  assert.equal("3", 3, "equal");
-  assert.deepEqual('3', 3, "deepEqual");
-  assert.strictEqual('3', 3, "strictEqual");
+  Assert.ok(true, "true");
+  Assert.ok(false, "false");
+  Assert.equal("3", 3, "equal");
+  Assert.deepEqual('3', 3, "deepEqual");
+  Assert.strictEqual('3', 3, "strictEqual");
 
   // check if invalid/filename.txt exists
   do_get_file("invalid/filename.txt");
@@ -32,9 +32,9 @@ function asyncTests() {
 
 function syncTests() {
   do_print("** Performing Synchronous tests **")
-  assert.ok(true, "true");
-  assert.ok(false);
-  assert.equal(timesThree(5), 15);
+  Assert.ok(true, "true");
+  Assert.ok(false);
+  Assert.equal(timesThree(5), 15);
 
   // check if test/sample-test.js exists
   do_get_file("tests/sample-test.js");
