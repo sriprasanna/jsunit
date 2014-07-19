@@ -4,12 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+"use strict";
 
-do_print("** Performing Subtest 1 **")
-
-do_subtest("tests/subtest1.js");
-
-do_print("** Performing Subtest 2 **")
-
-do_subtest("tests/subtest2.js");
-
+function timesThree ( n ) {
+  return n * 3;
+}

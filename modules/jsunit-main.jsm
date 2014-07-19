@@ -10,6 +10,7 @@ var EXPORTED_SYMBOLS = [ "JSUnit" ];
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://jsunit/Assert.jsm");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -24,13 +25,9 @@ function DEBUG_LOG(str) {
   dump("jsunit-main.jsm: "+str+"\n");
 }
 
-function setTimeout( callbackFunction, sleepTimeMs ) {
-  var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-  timer.initWithCallback(callbackFunction, sleepTimeMs, Ci.nsITimer.TYPE_ONE_SHOT);
-  return timer;
-}
-
 var JSUnit = {
+
+  assert: null,
 
   printMsg: function(str) {
     dump(str+"\n");
@@ -40,9 +37,19 @@ var JSUnit = {
     gTestSucceed++;
   },
 
-  dumpErr: function(testName, testStep, str) {
+  testFailed: function() {
     gTestError++;
-    JSUnit.printMsg(testName +" - Step "+ testStep +": ERROR: "+str);
+  },
+
+  logTestResult: function(err, message, stack) {
+    if (err) {
+      JSUnit.testFailed();
+      JSUnit.printMsg(err + " - " + stack);
+    }
+    else {
+      JSUnit.testSucceeded();
+      JSUnit.printMsg("Succeed: " + message + " - " + stack);
+    }
   },
 
   init: function () {
@@ -50,13 +57,14 @@ var JSUnit = {
     gCurrDir = Components.classes["@mozilla.org/file/directory_service;1"]
                 .getService(Components.interfaces.nsIDirectoryServiceProvider)
                 .getFile("CurWorkD",{}).path;
+    this.assert = new Assert(this.logTestResult);
   },
 
   getCwd: function () {
     return gCurrDir;
   },
 
-  getFile: function (testName, testStep, testdirRelativePath, allowNonexistent)
+  getFile: function (stack, testdirRelativePath, allowNonexistent)
   {
 
     //DEBUG_LOG("getFile: "+gCurrDir);
@@ -64,19 +72,26 @@ var JSUnit = {
     var fn = gCurrDir+"/"+testdirRelativePath;
 
     var lf = Components.classes["@mozilla.org/file/local;1"].createInstance(
-          Components.interfaces.nsILocalFile);
+          Components.interfaces.nsIFile);
     lf.initWithPath(fn);
 
     if (! (allowNonexistent || lf.exists())) {
-      JSUnit.dumpErr(testName, testStep, "file '"+fn+"' not found");
+      JSUnit.logTestResult("AssertionError: file '"+ fn + "' not found", null,
+        stack.filename +
+        " :: " + stack.name +
+        " :: line " + stack.lineNumber);
       return null;
     }
-
-    JSUnit.testSucceeded();
+    else {
+      JSUnit.logTestResult(null, "file '"+ fn + "' OK",
+        stack.filename +
+        " :: " + stack.name +
+        " :: line " + stack.lineNumber);
+    }
     return lf;
   },
 
-  executeScript: function(scriptFile, isAbsolutePath) {
+  executeScript: function(scriptFile, isAbsolutePath, dontRun) {
     if (! isAbsolutePath) {
       scriptFile = gCurrDir + "/" + scriptFile
     }
@@ -84,54 +99,36 @@ var JSUnit = {
     let context = {};
     Services.scriptloader.loadSubScript("resource://jsunit/jsunit-wrapper.js", context, "UTF-8");
     Services.scriptloader.loadSubScript("file://"+scriptFile, context, "UTF-8");
+    if (! dontRun) {
+      Services.scriptloader.loadSubScript("resource://jsunit/jsunit-exec.js", context, "UTF-8");
+    }
+
     if (gTestPending) {
       JSUnit.waitForAsyncTest();
     }
   },
 
-  checkTrue: function(testName, testStep, boolValue) {
-    if (! boolValue) {
-      JSUnit.dumpErr(testName, testStep, "found not true value");
-    }
-    else
-      JSUnit.testSucceeded();
+  loadScript: function (urlString, context) {
+    Services.scriptloader.loadSubScript(urlString, context, "UTF-8");
   },
 
-  checkFalse: function (testName, testStep, boolValue) {
-    if (boolValue) {
-      JSUnit.dumpErr(testName, testStep, "found true value");
-    }
-    else
-      JSUnit.testSucceeded();
-  },
-
-  checkEq: function(testName, testStep, a, b) {
-    if (! (a == b)) {
-      JSUnit.dumpErr(testName, testStep, "found: '"+a+"' != '"+b+"'");
-    }
-    else
-      JSUnit.testSucceeded();
-  },
-
-  checkNeq: function(testName, testStep, a, b) {
-    if (a == b) {
-      JSUnit.dumpErr(testName, testStep, "found: '"+a+"' == '"+b+"'");
-    }
-    else
-      JSUnit.testSucceeded();
+  abortPendingTests: function() {
+    gTestPending = 0;
   },
 
   testPending: function() {
-    gTestPending = 1;
+    ++gTestPending;
   },
 
   waitForAsyncTest: function () {
     var thread = Cc['@mozilla.org/thread-manager;1'].getService(Ci.nsIThreadManager).currentThread;
-    while (gTestPending) thread.processNextEvent(true);
+    while (gTestPending > 0) {
+      thread.processNextEvent(true);
+    }
   },
 
   testFinished: function() {
-    gTestPending = 0;
+    if (gTestPending > 0)  --gTestPending;
   },
 
   countSucceeded: function() {

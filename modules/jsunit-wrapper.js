@@ -10,45 +10,31 @@
 
 Components.utils.import("resource://jsunit/jsunit-main.jsm");
 
-var _gMyTestName = "";
+var assert = JSUnit.assert;
 
-function do_check_true(step, boolVal) {
-  return JSUnit.checkTrue(_gMyTestName, step, boolVal);
+
+function do_get_file (filename, allowNonexistent) {
+  var c = Components.stack.caller;
+  return JSUnit.getFile(c, filename, allowNonexistent);
 }
 
-function do_check_false (step, boolVal) {
-  return JSUnit.checkFalse(_gMyTestName, step, boolVal);
-}
-
-function do_check_eq (step, a, b) {
-  return JSUnit.checkEq(_gMyTestName, step, a, b);
-}
-
-function do_check_neq (step, a, b) {
-  return JSUnit.checkNeq(_gMyTestName, step, a, b);
-}
-
-function do_get_file (step, filename, allowNonexistent) {
-  return JSUnit.getFile(_gMyTestName, step, filename, allowNonexistent);
+function do_throw(exception) {
+  var c = Components.stack.caller;
+  return JSUnit.throwException(c.filename, c.lineNumber, exception);
 }
 
 var do_get_cwd = JSUnit.getCwd;
 
 var do_test_pending = JSUnit.testPending;
 
-var do_waitfor_async_test = JSUnit.waitForAsyncTest;
-
 var do_test_finished = JSUnit.testFinished;
 
-var do_print_msg = JSUnit.printMsg;
+var do_print = JSUnit.printMsg;
 
 var do_subtest = JSUnit.executeScript;
 
-function do_test_init(testName) {
-  _gMyTestName = testName;
+
+function do_load_script(urlString) {
+  JSUnit.loadScript(urlString, this);
 }
-
-//var do_throw;
-
-
 

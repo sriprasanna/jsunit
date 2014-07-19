@@ -43,16 +43,16 @@ CmdLineHandler.prototype = {
       JSUnit.init();
       dump("Starting JS unit tests " + fileName +"\n");
       try {
-        JSUnit.executeScript(fileName);
+        JSUnit.executeScript(fileName, false, true);
       }
       catch(ex) {
-        JSUnit.dumpErr("Exception occurred:\n"+ex.toString());
+        JSUnit.dumpFailed("Exception occurred:\n"+ex.toString());
         dump("** Tests aborted **\n");
       }
       dump("\nFINAL STATS\n");
-      dump("Tests executed : "+ (JSUnit.countFailed() + JSUnit.countSucceeded())+"\n");
-      dump("Tests succeeded: "+ JSUnit.countSucceeded()+"\n");
-      dump("Tests failed   : "+ JSUnit.countFailed()+"\n");
+      dump("TestResult: executed : "+ (JSUnit.countFailed() + JSUnit.countSucceeded())+"\n");
+      dump("TestResult: succeeded: "+ JSUnit.countSucceeded()+"\n");
+      dump("TestResult: failed   : "+ JSUnit.countFailed()+"\n");
     }
   },
 
