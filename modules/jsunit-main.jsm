@@ -29,8 +29,14 @@ var JSUnit = {
 
   assert: null,
 
-  printMsg: function(str) {
+  // printMsg: log stuff
+
+  dumpMsg: function(str) {
     dump(str+"\n");
+  },
+
+  logMsgToJsd: function(str) {
+    TinyjsdCommon.logString(str);
   },
 
   testSucceeded: function() {
@@ -52,12 +58,36 @@ var JSUnit = {
     }
   },
 
-  init: function () {
+  printStats: function() {
+    JSUnit.printMsg("\nFINAL STATS\n");
+    JSUnit.printMsg("TestResult: executed : "+ (JSUnit.countFailed() + JSUnit.countSucceeded()));
+    JSUnit.printMsg("TestResult: succeeded: "+ JSUnit.countSucceeded());
+    JSUnit.printMsg("TestResult: failed   : "+ JSUnit.countFailed());
+  },
+
+
+  init: function (useTinyJsd) {
     // initialize library
     gCurrDir = Components.classes["@mozilla.org/file/directory_service;1"]
                 .getService(Components.interfaces.nsIDirectoryServiceProvider)
                 .getFile("CurWorkD",{}).path;
     this.assert = new Assert(this.logTestResult);
+
+    if (useTinyJsd) {
+      try {
+        Components.utils.import("resource://tinyjsd/tinyjsdCommon.jsm");
+        this.printMsg = this.logMsgToJsd;
+        return;
+      }
+      catch(ex) {}
+    }
+
+    // fallback: command line interface
+    this.printMsg = this.dumpMsg;
+  },
+
+  setMainFile: function(fileName) {
+    TinyjsdCommon.enableJsUnit(this.makeUrl(fileName));
   },
 
   getCwd: function () {
@@ -91,7 +121,8 @@ var JSUnit = {
     return lf;
   },
 
-  executeScript: function(scriptFile, isAbsolutePath, dontRun) {
+
+  makeUrl: function(scriptFile, isAbsolutePath) {
     var isUrl = false;
     if (scriptFile.search(/^(chrome|file|resource):\/\//) == 0) {
       isAbsolutePath = true;
@@ -104,6 +135,12 @@ var JSUnit = {
     if (! isUrl) {
       scriptFile = "file://" + scriptFile;
     }
+
+    return scriptFile;
+  },
+
+  executeScript: function(scriptFile, isAbsolutePath, dontRun) {
+    scriptFile = JSUnit.makeUrl(scriptFile, isAbsolutePath);
 
     let context = {};
     Services.scriptloader.loadSubScript("resource://jsunit/jsunit-wrapper.js", context, "UTF-8");

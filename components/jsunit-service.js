@@ -27,32 +27,61 @@ CmdLineHandler.prototype = {
   _xpcom_categories: [{
      category: "profile-after-change",
      entry: "aaa-jsunit"
-   },
-   {
-    category: "command-line-handler",
-    entry: "m-jsunit"
-  }],
+    },
+    {
+      category: "command-line-handler",
+      entry: "m-jsunit"
+    },
+    {
+      category: "profile-after-change",
+      entry: "aaa-jsdunit"
+    },
+    {
+      category: "command-line-handler",
+      entry: "m-jsdunit"
+    }],
   QueryInterface: XPCOMUtils.generateQI(["nsICommandLineHandler", "nsIFactory"]),
+
+  startCmdLineTests: function(fileName) {
+    JSUnit.init(false);
+    JSUnit.printMsg("Starting JS unit tests " + fileName +"\n");
+    try {
+      JSUnit.executeScript(fileName, false, true);
+    }
+    catch(ex) {
+      JSUnit.dumpFailed("Exception occurred:\n"+ex.toString());
+      dump("** Tests aborted **\n");
+    }
+    JSUnit.printStats();
+  },
+
+  startTinyJSDTests: function(fileName) {
+
+    JSUnit.init(true);
+    JSUnit.setMainFile(fileName);
+
+    var wwatch = Cc["@mozilla.org/embedcomp/window-watcher;1"]
+                           .getService(Ci.nsIWindowWatcher);
+    wwatch.openWindow(null, "chrome://tinyjsd/content/tinyjsd-main.xul", "_blank",
+                      "chrome,resizable,all", null);
+  },
 
   // nsICommandLineHandler
   handle: function(cmdLine) {
+
+    // handle -jsunit
     var fileName = cmdLine.handleFlagWithParam("jsunit", false);
     if (fileName && fileName.length > 0) {
       cmdLine.preventDefault = true; // disallow to open main app window
+      this.startCmdLineTests(fileName);
+      return;
+    }
 
-      JSUnit.init();
-      dump("Starting JS unit tests " + fileName +"\n");
-      try {
-        JSUnit.executeScript(fileName, false, true);
-      }
-      catch(ex) {
-        JSUnit.dumpFailed("Exception occurred:\n"+ex.toString());
-        dump("** Tests aborted **\n");
-      }
-      dump("\nFINAL STATS\n");
-      dump("TestResult: executed : "+ (JSUnit.countFailed() + JSUnit.countSucceeded())+"\n");
-      dump("TestResult: succeeded: "+ JSUnit.countSucceeded()+"\n");
-      dump("TestResult: failed   : "+ JSUnit.countFailed()+"\n");
+    // handle -jsdunit
+    fileName = cmdLine.handleFlagWithParam("jsdunit", false);
+    if (fileName && fileName.length > 0) {
+      cmdLine.preventDefault = true; // disallow to open main app window
+      this.startTinyJSDTests(fileName);
     }
   },
 

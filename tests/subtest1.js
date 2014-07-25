@@ -35,7 +35,7 @@ function syncTests() {
   do_get_file("tests/sample-test.js");
 }
 
-do_load_script("chrome://jsunit/content/sample-include.js");
+do_load_module("chrome://jsunit/content/sample-include.js");
 
 function run_test() {
   syncTests();
