@@ -63,6 +63,9 @@ var JSUnit = {
     JSUnit.printMsg("TestResult: executed : "+ (JSUnit.countFailed() + JSUnit.countSucceeded()));
     JSUnit.printMsg("TestResult: succeeded: "+ JSUnit.countSucceeded());
     JSUnit.printMsg("TestResult: failed   : "+ JSUnit.countFailed());
+
+    gTestSucceed = 0;
+    gTestError = 0;
   },
 
 
@@ -70,7 +73,7 @@ var JSUnit = {
     // initialize library
     gCurrDir = Components.classes["@mozilla.org/file/directory_service;1"]
                 .getService(Components.interfaces.nsIDirectoryServiceProvider)
-                .getFile("CurWorkD",{}).path;
+                .getFile("CurWorkD",{});
     this.assert = new Assert(this.logTestResult);
 
     if (useTinyJsd) {
@@ -99,7 +102,7 @@ var JSUnit = {
 
     //DEBUG_LOG("getFile: "+gCurrDir);
 
-    var fn = gCurrDir+"/"+testdirRelativePath;
+    var fn = gCurrDir.path+"/"+testdirRelativePath;
 
     var lf = Components.classes["@mozilla.org/file/local;1"].createInstance(
           Components.interfaces.nsIFile);
@@ -130,7 +133,7 @@ var JSUnit = {
     }
 
     if (! isAbsolutePath) {
-      scriptFile = "file://" + gCurrDir + "/" + scriptFile
+      scriptFile = "file://" + gCurrDir.path + "/" + scriptFile
     }
     if (! isUrl) {
       scriptFile = "file://" + scriptFile;

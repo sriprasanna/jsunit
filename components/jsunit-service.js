@@ -46,6 +46,8 @@ CmdLineHandler.prototype = {
     JSUnit.init(false);
     JSUnit.printMsg("Starting JS unit tests " + fileName +"\n");
     try {
+      // ensure cache is deleted upon next application start
+      Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).invalidateCachesOnRestart();
       JSUnit.executeScript(fileName, false, true);
     }
     catch(ex) {
@@ -59,6 +61,9 @@ CmdLineHandler.prototype = {
 
     JSUnit.init(true);
     JSUnit.setMainFile(fileName);
+
+    // ensure cache is deleted upon next application start
+    Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).invalidateCachesOnRestart();
 
     var wwatch = Cc["@mozilla.org/embedcomp/window-watcher;1"]
                            .getService(Ci.nsIWindowWatcher);
