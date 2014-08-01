@@ -12,6 +12,14 @@ Components.utils.import("resource://jsunit/jsunit-main.jsm");
 
 var Assert = JSUnit.assert;
 
+// create placeholders for window and document to be used by command
+// line tests
+//
+// an empty document is always available; window is only created on request
+
+var document = JSUnit.createDOMDocument();
+var window;
+
 
 function do_get_file (filename, allowNonexistent) {
   var c = Components.stack.caller;

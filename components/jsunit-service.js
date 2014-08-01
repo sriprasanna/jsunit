@@ -43,6 +43,8 @@ CmdLineHandler.prototype = {
   QueryInterface: XPCOMUtils.generateQI(["nsICommandLineHandler", "nsIFactory"]),
 
   startCmdLineTests: function(fileName) {
+    var appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
+
     JSUnit.init(false);
     JSUnit.printMsg("Starting JS unit tests " + fileName +"\n");
     try {
@@ -51,10 +53,12 @@ CmdLineHandler.prototype = {
       JSUnit.executeScript(fileName, false, true);
     }
     catch(ex) {
-      JSUnit.dumpFailed("Exception occurred:\n"+ex.toString());
+      JSUnit.logTestResult("Exception occurred:\n"+ex.toString(), null, "");
       dump("** Tests aborted **\n");
     }
     JSUnit.printStats();
+
+    appStartup.quit(Ci.nsIAppStartup.eForceQuit);
   },
 
   startTinyJSDTests: function(fileName) {

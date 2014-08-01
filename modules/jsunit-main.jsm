@@ -186,5 +186,17 @@ var JSUnit = {
 
   countFailed: function() {
     return gTestError;
+  },
+
+  // create empty DOM document
+  createDOMDocument: function() {
+    var dp = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
+    return dp.parseFromString("</>", "text/xml");
+  },
+
+  createHiddenWindow: function() {
+    var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"]
+                                 .getService(Ci.nsIWindowWatcher);
+    return ww.openWindow(null, null, "JSUnit_Main",  "", null);
   }
 }
