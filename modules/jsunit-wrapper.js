@@ -17,9 +17,6 @@ var Assert = JSUnit.assert;
 //
 // an empty document is always available; window is only created on request
 
-var document = JSUnit.createDOMDocument();
-var window;
-
 
 function do_get_file (filename, allowNonexistent) {
   var c = Components.stack.caller;
