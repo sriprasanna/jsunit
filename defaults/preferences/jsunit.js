@@ -17,3 +17,17 @@ pref("browser.dom.window.dump.enabled", true);
 // disable XUL cache
 pref("nglayout.debug.disable_xul_cache", true);
 
+
+pref('javascript.options.showInConsole', true);
+pref('devtools.chrome.enabled', true);
+pref('extensions.logging.enabled', true);
+pref('nglayout.debug.disable_xul_fastload', true);
+pref('dom.report_all_js_exceptions', true);
+pref('devtools.errorconsole.deprecation_warnings', true);
+pref('devtools.errorconsole.enabled', true);
+
+pref('browser.cache.disk.enable', false);
+pref('browser.cache.memory.enable', false);
+pref('browser.cache.disk.max_entry_size', 0);
+pref('browser.cache.memory.max_entry_size', 0);
+pref('network.http.use-cache', false);

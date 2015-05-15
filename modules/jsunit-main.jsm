@@ -94,7 +94,7 @@ var JSUnit = {
   },
 
   getCwd: function () {
-    return gCurrDir;
+    return gCurrDir.clone();
   },
 
   getFile: function (stack, testdirRelativePath, allowNonexistent)
@@ -158,7 +158,14 @@ var JSUnit = {
   },
 
   loadScript: function (urlString, context) {
-    Services.scriptloader.loadSubScript(urlString, context, "UTF-8");
+    try {
+      Services.scriptloader.loadSubScript(urlString, context, "UTF-8");
+    }
+    catch (ex) {
+      JSUnit.printMsg("Failed to load '"+urlString+"' into "+context+"\n");
+      JSUnit.printMsg(ex.toString() + "\n");
+      throw "ERROR while loading script";
+    }
   },
 
   abortPendingTests: function() {
