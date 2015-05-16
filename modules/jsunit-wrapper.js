@@ -31,7 +31,10 @@ var do_test_finished = JSUnit.testFinished;
 
 var do_print = JSUnit.printMsg;
 
-var do_subtest = JSUnit.executeScript;
+function do_subtest(filePath) {
+  JSUnit.printMsg("*** Executing sub-test '"+filePath+"' ***");
+  return JSUnit.executeScript(filePath);
+}
 
 
 function do_load_module(urlString) {
